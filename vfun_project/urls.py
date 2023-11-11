@@ -16,8 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.contrib.auth import views as auth_views
+from vfun.views import CustomLoginView
+from vfun.forms import LoginForm
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("vfun/", include("vfun.urls")),
+    path('login/', CustomLoginView.as_view(redirect_authenticated_user=True,
+                                           template_name='vfun/login.html',
+                                           authentication_form=LoginForm), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(template_name='vfun/logout.html'), name='logout'),
 ]

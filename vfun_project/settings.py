@@ -12,19 +12,20 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 import socket
 from pathlib import Path
+from dotenv import load_dotenv
 
 import docker_config
+
+# loads configs from .env
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-with open(BASE_DIR / 'secret_key.txt') as f:
-    SECRET_KEY = f.read().strip()
-
+SECRET_KEY = str(os.getenv('SECRET_KEY'))
 
 # Application definition
 
@@ -74,7 +75,7 @@ WSGI_APPLICATION = "vfun_project.wsgi.application"
 if docker_config.DEPLOY_SECURE:
     DEBUG = False
     TEMPLATES[0]["OPTIONS"]["debug"] = False
-    ALLOWED_HOSTS = ['.kahsiongchong.com', 'localhost']
+    ALLOWED_HOSTS = [str(os.getenv('DOMAIN_NAME')), 'localhost']
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
 else:
@@ -84,7 +85,6 @@ else:
     CSRF_COOKIE_SECURE = False
     SESSION_COOKIE_SECURE = False
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -92,12 +92,12 @@ DATABASES = {
     "default": {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'gis',
-        'USER': 'docker',
-        'PASSWORD': 'docker',
+        'USER': str(os.getenv('POSTGIS_USER')),
+        'PASSWORD': str(os.getenv('POSTGIS_PASSWORD')),
     }
 }
 
-if socket.gethostname() == "KahSiong-MacBook-Pro.local":
+if socket.gethostname() == str(os.getenv('LOCAL_HOSTNAME')):
     DATABASES["default"]["HOST"] = "localhost"
     DATABASES["default"]["PORT"] = docker_config.POSTGIS_PORT
 else:
@@ -122,7 +122,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -133,7 +132,6 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -148,3 +146,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# 30 days
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 30
+
+LOGIN_REDIRECT_URL = '/'
+
+LOGIN_URL = 'login'
