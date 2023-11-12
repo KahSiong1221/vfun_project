@@ -2,10 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views import View
-from django.contrib.auth.views import LoginView, PasswordResetView
+from django.contrib.auth.views import LoginView, PasswordResetView, PasswordChangeView
+from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
 
-from .forms import RegisterForm, LoginForm
+from .forms import RegisterForm, LoginForm, UpdateUserForm, UpdateProfileForm
 
 
 class RegisterView(View):
@@ -68,5 +69,29 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
     success_url = reverse_lazy('vfun-home')
 
 
+class ChangePasswordView(SuccessMessageMixin, PasswordChangeView):
+    template_name = 'vfun/change_password.html'
+    success_message = "Successfully Changed Your Password"
+    success_url = reverse_lazy('vfun-home')
+
+
 def home(request):
     return render(request, 'vfun/home.html')
+
+
+@login_required
+def profile(request):
+    if request.method == 'POST':
+        user_form = UpdateUserForm(request.POST, instance=request.user)
+        profile_form = UpdateProfileForm(request.POST, instance=request.user.profile)
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, 'Your profile is updated successfully')
+            return redirect(to='vfun-profile')
+    else:
+        user_form = UpdateUserForm(instance=request.user)
+        profile_form = UpdateProfileForm(instance=request.user.profile)
+
+    return render(request, 'vfun/profile.html', {'user_form': user_form, 'profile_form': profile_form})
