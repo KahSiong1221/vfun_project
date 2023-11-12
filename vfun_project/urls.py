@@ -24,7 +24,7 @@ from vfun.forms import LoginForm
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("vfun/", include("vfun.urls")),
+    path("", include("vfun.urls")),
     path('login/', CustomLoginView.as_view(redirect_authenticated_user=True,
                                            template_name='vfun/login.html',
                                            authentication_form=LoginForm), name='login'),
