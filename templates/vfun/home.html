@@ -44,8 +44,21 @@
                         fillOpacity: 0.7,
                         radius: position.coords.accuracy,
                     }).addTo(map);
-
-
+                    /*
+                    await fetch("{% url 'get_halls' %}", {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    }).then(response => {
+                        console.log(response)
+                        return response
+                    }).then(data => {
+                        for (let hall in data) {
+                            L.marker([hall.location[0], hall.location[1]]).addTo(map);
+                        }
+                    });
+                    */
                 });
             }
         }
