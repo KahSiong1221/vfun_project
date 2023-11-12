@@ -1,17 +1,53 @@
 {% extends "vfun/base.html" %}
+
+{% load leaflet_tags %}
+
 {% block title %} Home Page {% endblock title%}
 {% block content %}
     <div class="jumbotron">
-        <h1 class="display-4">Welcome</h1>
-        <p class="lead">
-            This is <b>user registration and login system</b> build with django which is
-            a Python-based free and open-source web framework that follows the model–template–views architectural pattern.
-        </p>
+        <h1 class="display-4">Volleyball Sports Halls</h1>
         <hr class="my-4">
-        <p class="lead">
-            <a class="btn btn-primary btn-lg" href="#" role="button">Logout</a>
-            <a class="btn btn-primary btn-lg" href="#" role="button">Sign in</a>
-        </p>
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div id="map">{% leaflet_map "my_location" callback="map_init" %}</div>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <style>
+        #map {
+            position: relative;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+
+    <script>
+        function map_init(map, options) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async function (position) {
+                    let lat = position.coords.latitude;
+                    let lon = position.coords.longitude;
+
+                    map.setView([lat, lon], 13);
+
+                    L.circle([lat, lon], {
+                        stroke: false,
+                        fillColor: 'red',
+                        fillOpacity: 0.3,
+                        radius: position.coords.accuracy * 3,
+                    }).addTo(map);
+
+                    L.circle([lat, lon], {
+                        fillOpacity: 0.7,
+                        radius: position.coords.accuracy,
+                    }).addTo(map);
+
+
+                });
+            }
+        }
+    </script>
 {% endblock content %}

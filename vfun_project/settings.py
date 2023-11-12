@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.gis",
     "vfun",
     "whitenoise.runserver_nostatic",
+    "leaflet",
 ]
 
 MIDDLEWARE = [
@@ -150,7 +151,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # 30 days
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 30
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = 'vfun-home'
 
 LOGIN_URL = 'login'
 
@@ -161,3 +162,13 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = str(os.getenv('EMAIL_USER'))
 EMAIL_HOST_PASSWORD = str(os.getenv('EMAIL_PASSWORD'))
+
+LEAFLET_CONFIG = {
+    'DEFAULT_CENTER': (53.0, -8.0),
+    'DEFAULT_ZOOM': 16,
+    'MIN_ZOOM': 3,
+    'MAX_ZOOM': 18,
+    'RESET_VIEW': False,
+    'SCALE': None,
+    'OPACITY': 0.5,
+}
