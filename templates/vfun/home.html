@@ -1,9 +1,9 @@
 {% extends "vfun/base.html" %}
 
 {% load leaflet_tags %}
-
 {% block title %} Home Page {% endblock title%}
 {% block content %}
+    {{ halls|json_script:"halls-data" }}
     <div class="jumbotron">
         <h1 class="display-4">Volleyball Sports Halls</h1>
         <hr class="my-4">
@@ -25,6 +25,8 @@
     </style>
 
     <script>
+        const halls = JSON.parse(document.getElementById("halls-data").textContent);
+
         function map_init(map, options) {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async function (position) {
@@ -37,28 +39,18 @@
                         stroke: false,
                         fillColor: 'red',
                         fillOpacity: 0.3,
-                        radius: position.coords.accuracy * 3,
+                        radius: position.coords.accuracy * 20,
                     }).addTo(map);
 
                     L.circle([lat, lon], {
                         fillOpacity: 0.7,
                         radius: position.coords.accuracy,
                     }).addTo(map);
-                    /*
-                    await fetch("{% url 'get_halls' %}", {
-                        method: "GET",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    }).then(response => {
-                        console.log(response)
-                        return response
-                    }).then(data => {
-                        for (let hall in data) {
-                            L.marker([hall.location[0], hall.location[1]]).addTo(map);
-                        }
-                    });
-                    */
+
+                    for (const [key, value] of Object.entries(halls.features)) {
+                        let point = [value.geometry.coordinates[1], value.geometry.coordinates[0]]
+                        L.marker(point).addTo(map);
+                    };
                 });
             }
         }

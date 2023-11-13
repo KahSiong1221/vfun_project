@@ -1,10 +1,12 @@
 import json
 
-from django.http import HttpResponse
+from django.core.serializers import serialize
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.generic import TemplateView
 from django.contrib.auth.views import LoginView, PasswordResetView, PasswordChangeView
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
@@ -79,11 +81,17 @@ class ChangePasswordView(SuccessMessageMixin, PasswordChangeView):
     success_url = reverse_lazy('vfun-home')
 
 
-def get_halls(request):
-    if request.method == 'GET' and request.user.is_authenticated:
-        halls = SportsHall.objects.all().values()
-        json_data = json.dumps(list(halls))
-        return HttpResponse(json_data, content_type='application/json')
+class SportsHallMapView(TemplateView):
+    template_name = "vfun/home.html"
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(SportsHallMapView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["halls"] = json.loads(serialize("geojson", SportsHall.objects.all()))
+        return context
 
 
 @login_required
