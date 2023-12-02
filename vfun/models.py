@@ -31,11 +31,18 @@ class Session(models.Model):
         ("EXP", "Expert"),
     ]
 
+    GENDERS = [
+        ("MIX", "Mixed"),
+        ("MEN", "Men"),
+        ("WOM", "Women"),
+    ]
+
     hall = models.ForeignKey(SportsHall, on_delete=models.CASCADE)
     organizer = models.ForeignKey(Profile, on_delete=models.CASCADE)
     datetime = models.DateTimeField()
     duration_min = models.IntegerField()
     capacity = models.IntegerField()
     level = models.CharField(max_length=3, choices=LEVELS, default=LEVELS[0][0])
+    gender = models.CharField(max_length=3, choices=GENDERS, default=GENDERS[0][0])
     players = models.ManyToManyField(Profile, related_name="%(app_label)s_%(class)s_players")
     price = models.FloatField(default=0)
