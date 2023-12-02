@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     "vfun",
     "whitenoise.runserver_nostatic",
     "leaflet",
+    "rest_framework",
+    "rest_framework_gis",
+    "pwa",
 ]
 
 MIDDLEWARE = [
@@ -171,4 +174,5 @@ LEAFLET_CONFIG = {
     'RESET_VIEW': False,
     'SCALE': None,
     'OPACITY': 0.5,
+    'FORCE_IMAGE_PATH': True,
 }
