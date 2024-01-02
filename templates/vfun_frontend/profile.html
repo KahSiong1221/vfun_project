@@ -1,4 +1,4 @@
-{% extends "vfun/base.html" %}
+{% extends "vfun_frontend/base.html" %}
 {% block title %}Profile Page{% endblock title %}
 {% block content %}
     {% if user_form.errors %}
@@ -27,7 +27,7 @@
                     <div class="form-group">
                         <a href="{% url 'password_change' %}">Change Password</a>
                     </div>
-                    <label class="small mb-1">Bio:</label> {{ profile_form.bio }}
+                    <label class="small mb-1">Phone Number:</label> {{ profile_form.phone_no }}
                 </div>
             </div>
             <br><br>

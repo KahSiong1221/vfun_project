@@ -13,6 +13,7 @@ import os
 import socket
 from pathlib import Path
 from dotenv import load_dotenv
+from corsheaders.defaults import default_headers
 
 import docker_config
 
@@ -27,6 +28,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = str(os.getenv('SECRET_KEY'))
 
+AUTH_TOKEN = str(os.getenv('AUTH_TOKEN'))
+
+CORS_ALLOW_HEADERS = default_headers + (
+    'Access-Control-Allow-Origin',
+)
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -38,22 +45,26 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.gis",
     "vfun",
+    "vfun_frontend",
     "whitenoise.runserver_nostatic",
     "leaflet",
     "rest_framework",
+    'rest_framework.authtoken',
     "rest_framework_gis",
     "pwa",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "vfun_project.urls"
@@ -82,12 +93,17 @@ if docker_config.DEPLOY_SECURE:
     ALLOWED_HOSTS = [str(os.getenv('DOMAIN_NAME')), 'localhost']
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    STATIC_ROOT = os.path.join(BASE_DIR, "static")
 else:
     DEBUG = True
     TEMPLATES[0]["OPTIONS"]["debug"] = True
     ALLOWED_HOSTS = ['*']
     CSRF_COOKIE_SECURE = False
     SESSION_COOKIE_SECURE = False
+    STATICFILES_DIRS = (
+        os.path.join(BASE_DIR, 'static/'),
+    )
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -142,9 +158,6 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -154,7 +167,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # 30 days
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 30
 
-LOGIN_REDIRECT_URL = 'vfun-home'
+LOGIN_REDIRECT_URL = 'sportshall_list'
 
 LOGIN_URL = 'login'
 
@@ -166,6 +179,13 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = str(os.getenv('EMAIL_USER'))
 EMAIL_HOST_PASSWORD = str(os.getenv('EMAIL_PASSWORD'))
 
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:80',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
+
 LEAFLET_CONFIG = {
     'DEFAULT_CENTER': (53.0, -8.0),
     'DEFAULT_ZOOM': 16,
@@ -175,4 +195,10 @@ LEAFLET_CONFIG = {
     'SCALE': None,
     'OPACITY': 0.5,
     'FORCE_IMAGE_PATH': True,
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',  # <-- And here
+    ],
 }

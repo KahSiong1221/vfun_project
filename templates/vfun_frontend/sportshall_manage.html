@@ -1,0 +1,56 @@
+{% extends "vfun_frontend/base.html" %}
+
+{% load static %}
+{% load leaflet_tags %}
+
+{% block title %} My Sports Halls {% endblock title%}
+{% block content %}
+    {{ sportshalls|json_script:"mysportshalls-data" }}
+
+    <div class="jumbotron">
+        <h1 class="display-6">My Sports Halls</h1>
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-4">
+                <div id="map">{% leaflet_map "my_hall_locations" callback="manage_sportshalls_map_init" %}</div>
+            </div>
+            <div id="sportshall-container" class="col-12 col-md-8 list-group list-group-overflow">
+                {% for hall in sportshalls %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ hall.name }}
+                        <button class="btn btn-info hall-detail-btn" data-point="{{ hall.location.coordinates }}" data-id="{{ hall.id }}">View</button>
+                    </li>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .leaflet-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        @media (max-width: 575.98px) {
+            .list-group-overflow {
+                max-height: 40vh;
+                overflow-y: scroll;
+            }
+            #map {
+            height: 40vh;
+            }
+        }
+        @media (min-width: 576px) {
+            .list-group-overflow {
+                max-height: 65vh;
+                overflow-y: scroll;
+            }
+            #map {
+            height: 65vh;
+            }
+        }
+    </style>
+
+    <script src="{% static 'vfun_frontend/js/map.js' %}"></script>
+    <script src="{% static 'vfun_frontend/js/sportshall_manage.js' %}"></script>
+
+{% endblock content %}
