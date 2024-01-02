@@ -98,7 +98,6 @@ function manage_sportshalls_map_init(map, options) {
         let hallForm = document.createElement('div');
         hallForm.className = 'form-content';
         hallForm.innerHTML = `<form>
-                                {% csrf_token %}
                                 <div class="form-group row">
                                     <label for="hallName" class="col-sm-2 col-form-label">Name</label>
                                     <div class="col-sm-10">

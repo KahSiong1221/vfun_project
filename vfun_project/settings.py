@@ -93,17 +93,12 @@ if docker_config.DEPLOY_SECURE:
     ALLOWED_HOSTS = [str(os.getenv('DOMAIN_NAME')), 'localhost']
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-    STATIC_ROOT = os.path.join(BASE_DIR, "static")
 else:
     DEBUG = True
     TEMPLATES[0]["OPTIONS"]["debug"] = True
     ALLOWED_HOSTS = ['*']
     CSRF_COOKIE_SECURE = False
     SESSION_COOKIE_SECURE = False
-    STATICFILES_DIRS = (
-        os.path.join(BASE_DIR, 'static/'),
-    )
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -157,6 +152,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
+
+# Use STATICFILES_DIRS during development, STATICFILES_STORAGE & STATIC_ROOT during production
+
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+
+STATICFILES_DIRS = (
+  os.path.join(BASE_DIR, 'static/'),
+)
 
 
 # Default primary key field type
